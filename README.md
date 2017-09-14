@@ -1,5 +1,11 @@
 # DiffResults
 
+[![Build Status](https://travis-ci.org/JuliaDiff/DiffResults.jl.svg?branch=master)](https://travis-ci.org/JuliaDiff/DiffResults.jl)
+[![Coverage Status](https://coveralls.io/repos/github/JuliaDiff/DiffResults.jl/badge.svg?branch=master)](https://coveralls.io/github/JuliaDiff/DiffResults.jl?branch=master)
+
+[![](https://img.shields.io/badge/docs-stable-blue.svg)](http://www.juliadiff.org/DiffResults.jl/stable)
+[![](https://img.shields.io/badge/docs-latest-blue.svg)](http://www.juliadiff.org/DiffResults.jl/latest)
+
 Many differentiation techniques can calculate primal values and multiple orders of
 derivatives simultaneously. In other words, there are techniques for computing `f(x)`,
 `∇f(x)` and `H(f(x))` in one fell swoop!

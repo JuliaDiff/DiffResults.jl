@@ -3,6 +3,7 @@ __precompile__()
 module DiffResults
 
 using StaticArrays
+using Compat
 
 #########
 # Types #
@@ -156,7 +157,7 @@ instance will be created and returned, whereas if `r::MutableDiffResult`, then `
 mutated in-place and returned. Thus, this function should be called as `r = value!(r, x)`.
 """
 value!(r::MutableDiffResult, x::Number) = (r.value = x; return r)
-value!(r::MutableDiffResult, x::AbstractArray) = (copy!(value(r), x); return r)
+value!(r::MutableDiffResult, x::AbstractArray) = (copyto!(value(r), x); return r)
 value!(r::ImmutableDiffResult{O,V}, x::Union{Number,AbstractArray}) where {O,V} = ImmutableDiffResult(convert(V, x), r.derivs)
 
 """
@@ -198,7 +199,7 @@ function derivative!(r::MutableDiffResult, x::Number, ::Type{Val{i}} = Val{1}) w
 end
 
 function derivative!(r::MutableDiffResult, x::AbstractArray, ::Type{Val{i}} = Val{1}) where {i}
-    copy!(derivative(r, Val{i}), x)
+    copyto!(derivative(r, Val{i}), x)
     return r
 end
 

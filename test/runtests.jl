@@ -1,6 +1,4 @@
-using DiffResults, StaticArrays
-using Compat
-using Compat.Test
+using DiffResults, StaticArrays, Test
 
 using DiffResults: DiffResult, GradientResult, JacobianResult, HessianResult,
                    value, value!, derivative, derivative!, gradient, gradient!,

@@ -1,9 +1,6 @@
-__precompile__()
-
 module DiffResults
 
 using StaticArrays
-using Compat
 
 #########
 # Types #

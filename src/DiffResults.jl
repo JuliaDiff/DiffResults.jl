@@ -101,7 +101,7 @@ Note that `HessianResult` allocates its own storage; `x` is only used for type a
 shape information. If you want to allocate storage yourself, use the `DiffResult`
 constructor instead.
 """
-HessianResult(x::AbstractArray) = DiffResult(first(x), zeros(length(x)), similar(x, length(x), length(x)))
+HessianResult(x::AbstractArray) = DiffResult(first(x), zeros(size(x)), similar(x, length(x), length(x)))
 HessianResult(x::StaticArray) = DiffResult(first(x), x, zeros(StaticArrays.similar_type(typeof(x), Size(length(x),length(x)))))
 
 #############

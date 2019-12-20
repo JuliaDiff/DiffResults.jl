@@ -293,5 +293,7 @@ using DiffResults: DiffResult, GradientResult, JacobianResult, HessianResult,
         @test size(gradient(HessianResult(x0))) == size(x0)
         @test size(gradient(HessianResult(x1))) == size(x1)
         @test size(gradient(HessianResult(x2))) == size(x2)
+
+        @test HessianResult(Float32.(x0)).derivs[1] isa Vector{Float32}
     end
 end

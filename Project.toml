@@ -1,6 +1,6 @@
 name = "DiffResults"
 uuid = "163ba53b-c6d8-5494-b064-1a9d43ac40c5"
-version = "1.0.1"
+version = "1.0.2"
 
 [deps]
 StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"

@@ -1,6 +1,6 @@
 # DiffResults
 
-[![Build Status](https://travis-ci.org/JuliaDiff/DiffResults.jl.svg?branch=master)](https://travis-ci.org/JuliaDiff/DiffResults.jl)
+![CI](https://github.com/JuliaDiff/DiffResults.jl/workflows/CI/badge.svg)
 [![Coverage Status](https://coveralls.io/repos/github/JuliaDiff/DiffResults.jl/badge.svg?branch=master)](https://coveralls.io/github/JuliaDiff/DiffResults.jl?branch=master)
 
 [![](https://img.shields.io/badge/docs-stable-blue.svg)](http://www.juliadiff.org/DiffResults.jl/stable)

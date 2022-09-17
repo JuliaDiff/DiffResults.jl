@@ -1,6 +1,6 @@
 module DiffResults
 
-using StaticArrays
+using StaticArraysCore: StaticArray, similar_type  #, Size  # Size is not yet in Core package
 
 #########
 # Types #
@@ -76,7 +76,8 @@ shape information. If you want to allocate storage yourself, use the `DiffResult
 constructor instead.
 """
 JacobianResult(x::AbstractArray) = DiffResult(similar(x), similar(x, length(x), length(x)))
-JacobianResult(x::StaticArray) = DiffResult(x, zeros(StaticArrays.similar_type(typeof(x), Size(length(x),length(x)))))
+# JacobianResult(x::StaticArray) = DiffResult(x, zeros(similar_type(typeof(x), Size(length(x),length(x)))))
+JacobianResult(x::StaticArray) = DiffResult(x, zeros(similar_type(typeof(x), (axes(vec(x))..., axes(vec(x))...))))
 
 """
     JacobianResult(y::AbstractArray, x::AbstractArray)
@@ -89,7 +90,8 @@ Like the single argument version, `y` and `x` are only used for type and
 shape information and are not stored in the returned `DiffResult`.
 """
 JacobianResult(y::AbstractArray, x::AbstractArray) = DiffResult(similar(y), similar(y, length(y), length(x)))
-JacobianResult(y::StaticArray, x::StaticArray) = DiffResult(y, zeros(StaticArrays.similar_type(typeof(x), Size(length(y),length(x)))))
+# JacobianResult(y::StaticArray, x::StaticArray) = DiffResult(y, zeros(similar_type(typeof(x), Size(length(y),length(x)))))
+JacobianResult(y::StaticArray, x::StaticArray) = DiffResult(y, zeros(similar_type(typeof(x), (axes(vec(y))..., axes(vec(x))...))))
 
 """
     HessianResult(x::AbstractArray)
@@ -102,7 +104,8 @@ shape information. If you want to allocate storage yourself, use the `DiffResult
 constructor instead.
 """
 HessianResult(x::AbstractArray) = DiffResult(first(x), zeros(eltype(x), size(x)), similar(x, length(x), length(x)))
-HessianResult(x::StaticArray) = DiffResult(first(x), x, zeros(StaticArrays.similar_type(typeof(x), Size(length(x),length(x)))))
+# HessianResult(x::StaticArray) = DiffResult(first(x), x, zeros(similar_type(typeof(x), Size(length(x),length(x)))))
+HessianResult(x::StaticArray) = DiffResult(first(x), x, zeros(similar_type(typeof(x), (axes(vec(x))..., axes(vec(x))...))))
 
 #############
 # Interface #

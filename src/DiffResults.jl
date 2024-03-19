@@ -1,6 +1,6 @@
 module DiffResults
 
-using StaticArraysCore: StaticArray, similar_type, Size
+using StaticArraysCore: StaticArray, similar_type, Size, MArray, SizedArray
 
 #########
 # Types #

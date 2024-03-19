@@ -1,8 +1,8 @@
 using DiffResults, StaticArrays, Test
 
 using DiffResults: DiffResult, GradientResult, JacobianResult, HessianResult,
-    value, value!, derivative, derivative!, gradient, gradient!,
-    jacobian, jacobian!, hessian, hessian!
+                   value, value!, derivative, derivative!, gradient, gradient!,
+                   jacobian, jacobian!, hessian, hessian!
 
 @testset "DiffResult" begin
 
@@ -11,7 +11,6 @@ using DiffResults: DiffResult, GradientResult, JacobianResult, HessianResult,
     x0, x1, x2 = rand(k), rand(k, k), rand(k, k, k)
     s0, s1, s2 = SVector{k}(rand(k)), SMatrix{k,k}(rand(k, k)), SArray{Tuple{k,k,k}}(rand(k, k, k))
     m0, m1, m2 = MVector{k}(rand(k)), MMatrix{k,k}(rand(k, k)), MArray{Tuple{k,k,k}}(rand(k, k, k))
-    y0, y1, y2 = SizedVector{k}(rand(k)), SizedMatrix{k,k}(rand(k, k)), SizedArray{Tuple{k,k,k}}(rand(k, k, k))
 
     rn = DiffResult(n0, n1, n2)
     rx = DiffResult(x0, x1, x2)

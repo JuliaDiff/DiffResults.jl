@@ -10,9 +10,12 @@ using DiffResults: DiffResult, GradientResult, JacobianResult, HessianResult,
     n0, n1, n2 = rand(), rand(), rand()
     x0, x1, x2 = rand(k), rand(k, k), rand(k, k, k)
     s0, s1, s2 = SVector{k}(rand(k)), SMatrix{k,k}(rand(k, k)), SArray{Tuple{k,k,k}}(rand(k, k, k))
+    m0, m1, m2 = MVector{k}(rand(k)), MMatrix{k,k}(rand(k, k)), MArray{Tuple{k,k,k}}(rand(k, k, k))
+
     rn = DiffResult(n0, n1, n2)
     rx = DiffResult(x0, x1, x2)
     rs = DiffResult(s0, s1, s2)
+    rm = DiffResult(m0, m1, m2)
     rsmix = DiffResult(n0, s0, s1)
 
     issimilar(x, y) = typeof(x) == typeof(y) && size(x) == size(y)
@@ -22,6 +25,7 @@ using DiffResults: DiffResult, GradientResult, JacobianResult, HessianResult,
     @test rn === DiffResult(n0, n1, n2)
     @test rx == DiffResult(x0, x1, x2)
     @test rs === DiffResult(s0, s1, s2)
+    @test rm == DiffResult(m0, m1, m2)
     @test rsmix === DiffResult(n0, s0, s1)
 
     @test issimilar(GradientResult(x0), DiffResult(first(x0), x0))
@@ -34,9 +38,15 @@ using DiffResults: DiffResult, GradientResult, JacobianResult, HessianResult,
     @test JacobianResult(SVector{k+1}(vcat(s0, 0.0)), s0) === DiffResult(SVector{k+1}(vcat(s0, 0.0)), zeros(SMatrix{k+1,k,Float64}))
     @test HessianResult(s0) === DiffResult(first(s0), s0, zeros(SMatrix{k,k,Float64}))
 
+    @test issimilar(GradientResult(m0), DiffResult(first(m0), m0))
+    @test issimilar(JacobianResult(m0), DiffResult(m0, zeros(MMatrix{k,k,Float64})))
+    @test issimilar(JacobianResult(MVector{k + 1}(vcat(m0, 0.0)), m0), DiffResult(MVector{k + 1}(vcat(m0, 0.0)), zeros(MMatrix{k + 1,k,Float64})))
+    @test issimilar(HessianResult(m0), DiffResult(first(m0), m0, zeros(MMatrix{k,k,Float64})))
+
     @test eltype(rn) === typeof(n0)
     @test eltype(rx) === eltype(x0)
     @test eltype(rs) === eltype(s0)
+    @test eltype(rm) === eltype(m0)
 
     rn_copy = copy(rn)
     @test rn == rn_copy
@@ -50,6 +60,10 @@ using DiffResults: DiffResult, GradientResult, JacobianResult, HessianResult,
     @test rs == rs_copy
     @test rs === rs_copy
 
+    rm_copy = copy(rm)
+    @test rm == rm_copy
+    @test rm !== rm_copy
+
     rsmix_copy = copy(rsmix)
     @test rsmix == rsmix_copy
     @test rsmix === rsmix_copy
@@ -59,6 +73,7 @@ using DiffResults: DiffResult, GradientResult, JacobianResult, HessianResult,
         @test value(rn) === n0
         @test value(rx) === x0
         @test value(rs) === s0
+        @test value(rm) === m0
         @test value(rsmix) === n0
 
         rn = value!(rn, n1)
@@ -75,6 +90,11 @@ using DiffResults: DiffResult, GradientResult, JacobianResult, HessianResult,
         @test value(rs) == s0_new
         @test typeof(value(rs)) === typeof(s0)
         rs = value!(rs, s0)
+
+        m0_new, m0_copy = rand(k), copy(m0)
+        rm = value!(rm, m0_new)
+        @test value(rm) === m0 == m0_new
+        rm = value!(rm, m0_copy)
 
         rsmix = value!(rsmix, n1)
         @test value(rsmix) === n1
@@ -94,6 +114,11 @@ using DiffResults: DiffResult, GradientResult, JacobianResult, HessianResult,
         @test value(rs) == exp.(s0_new)
         @test typeof(value(rs)) === typeof(s0)
         rs = value!(rs, s0)
+
+        m0_new, m0_copy = rand(k), copy(m0)
+        rm = value!(exp, rm, m0_new)
+        @test value(rm) === m0 == exp.(m0_new)
+        rm = value!(rm, m0_copy)
 
         rsmix = value!(exp, rsmix, n1)
         @test value(rsmix) === exp(n1)
@@ -115,6 +140,9 @@ using DiffResults: DiffResult, GradientResult, JacobianResult, HessianResult,
 
         @test derivative(rs) === s1
         @test derivative(rs, Val{2}) === s2
+
+        @test derivative(rm) === m1
+        @test derivative(rm, Val{2}) === m2
 
         @test derivative(rsmix) === s0
         @test derivative(rsmix, Val{2}) === s1
@@ -140,6 +168,11 @@ using DiffResults: DiffResult, GradientResult, JacobianResult, HessianResult,
         @test typeof(derivative(rsmix)) === typeof(s0)
         rsmix = derivative!(rsmix, s0)
 
+        m1_new, m1_copy = rand(k, k), copy(m1)
+        rm = derivative!(rm, m1_new)
+        @test derivative(rm) === m1 == m1_new
+        rm = derivative!(rm, m1_copy)
+
         rn = derivative!(rn, n1, Val{2})
         @test derivative(rn, Val{2}) === n1
         rn = derivative!(rn, n2, Val{2})
@@ -160,6 +193,11 @@ using DiffResults: DiffResult, GradientResult, JacobianResult, HessianResult,
         @test derivative(rsmix, Val{2}) == s1_new
         @test typeof(derivative(rsmix, Val{2})) === typeof(s1)
         rsmix = derivative!(rsmix, s1, Val{2})
+
+        m2_new, m2_copy = rand(k, k, k), copy(m2)
+        rm = derivative!(rm, m2_new, Val{2})
+        @test derivative(rm, Val{2}) === m2 == m2_new
+        rm = derivative!(rm, m2_copy, Val{2})
 
         rn = derivative!(exp, rn, n0)
         @test derivative(rn) === exp(n0)
@@ -182,6 +220,11 @@ using DiffResults: DiffResult, GradientResult, JacobianResult, HessianResult,
         @test typeof(derivative(rsmix)) === typeof(s0)
         rsmix = derivative!(exp, rsmix, s0)
 
+        m1_new, m1_copy = rand(k, k), copy(m1)
+        rm = derivative!(exp, rm, m1_new)
+        @test derivative(rm) === m1 == exp.(m1_new)
+        rm = derivative!(exp, rm, m1_copy)
+
         rn = derivative!(exp, rn, n1, Val{2})
         @test derivative(rn, Val{2}) === exp(n1)
         rn = derivative!(rn, n2, Val{2})
@@ -202,6 +245,11 @@ using DiffResults: DiffResult, GradientResult, JacobianResult, HessianResult,
         @test derivative(rsmix, Val{2}) == exp.(s1_new)
         @test typeof(derivative(rsmix, Val{2})) === typeof(s1)
         rsmix = derivative!(exp, rsmix, s1, Val{2})
+
+        m2_new, m2_copy = rand(k, k, k), copy(m2)
+        rm = derivative!(exp, rm, m2_new, Val{2})
+        @test derivative(rm, Val{2}) === m2 == exp.(m2_new)
+        rm = derivative!(exp, rm, m2_copy, Val{2})
     end
 
     @testset "gradient/gradient!" begin
@@ -217,6 +265,11 @@ using DiffResults: DiffResult, GradientResult, JacobianResult, HessianResult,
         @test typeof(gradient(rs)) === typeof(s1)
         rs = gradient!(rs, s1)
 
+        m1_new, m1_copy = rand(k, k), copy(m1)
+        rm = gradient!(rm, m1_new)
+        @test gradient(rm) === m1 == m1_new
+        rm = gradient!(rm, m1_copy)
+
         x1_new, x1_copy = rand(k, k), copy(x1)
         rx = gradient!(exp, rx, x1_new)
         @test gradient(rx) === x1 == exp.(x1_new)
@@ -227,6 +280,11 @@ using DiffResults: DiffResult, GradientResult, JacobianResult, HessianResult,
         @test gradient(rsmix) == exp.(s0_new)
         @test typeof(gradient(rsmix)) === typeof(s0)
         rsmix = gradient!(exp, rsmix, s0)
+
+        m1_new, m1_copy = rand(k, k), copy(m1)
+        rm = gradient!(exp, rm, m1_new)
+        @test gradient(rm) === m1 == exp.(m1_new)
+        rm = gradient!(exp, rm, m1_copy)
 
         T = typeof(SVector{k*k}(rand(k*k)))
         rs_new = gradient!(rs, convert(T, gradient(rs)))
@@ -246,6 +304,11 @@ using DiffResults: DiffResult, GradientResult, JacobianResult, HessianResult,
         @test typeof(jacobian(rs)) === typeof(s1)
         rs = jacobian!(rs, s1)
 
+        m1_new, m1_copy = rand(k, k), copy(m1)
+        rm = jacobian!(rm, m1_new)
+        @test jacobian(rm) === m1 == m1_new
+        rm = jacobian!(rm, m1_copy)
+
         x1_new, x1_copy = rand(k, k), copy(x1)
         rx = jacobian!(exp, rx, x1_new)
         @test jacobian(rx) === x1 == exp.(x1_new)
@@ -256,6 +319,11 @@ using DiffResults: DiffResult, GradientResult, JacobianResult, HessianResult,
         @test jacobian(rsmix) == exp.(s0_new)
         @test typeof(jacobian(rsmix)) === typeof(s0)
         rsmix = jacobian!(exp, rsmix, s0)
+
+        m1_new, m1_copy = rand(k, k), copy(m1)
+        rm = jacobian!(exp, rm, m1_new)
+        @test jacobian(rm) === m1 == exp.(m1_new)
+        rm = jacobian!(exp, rm, m1_copy)
 
         T = typeof(SVector{k*k}(rand(k*k)))
         rs_new = jacobian!(rs, convert(T, jacobian(rs)))
@@ -275,6 +343,11 @@ using DiffResults: DiffResult, GradientResult, JacobianResult, HessianResult,
         @test typeof(hessian(rs)) === typeof(s2)
         rs = hessian!(rs, s2)
 
+        m2_new, m2_copy = rand(k, k, k), copy(m2)
+        rm = hessian!(rm, m2_new)
+        @test hessian(rm) === m2 == m2_new
+        rm = hessian!(rm, m2_copy)
+
         x2_new, x2_copy = rand(k, k, k), copy(x2)
         rx = hessian!(exp, rx, x2_new)
         @test hessian(rx) === x2 == exp.(x2_new)
@@ -285,6 +358,11 @@ using DiffResults: DiffResult, GradientResult, JacobianResult, HessianResult,
         @test hessian(rsmix) == exp.(s1_new)
         @test typeof(hessian(rsmix)) === typeof(s1)
         rsmix = hessian!(exp, rsmix, s1)
+
+        m2_new, m2_copy = rand(k, k, k), copy(m2)
+        rm = hessian!(exp, rm, m2_new)
+        @test hessian(rm) === m2 == exp.(m2_new)
+        rm = hessian!(exp, rm, m2_copy)
 
         T = typeof(SVector{k*k*k}(rand(k*k*k)))
         rs_new = hessian!(rs, convert(T, hessian(rs)))

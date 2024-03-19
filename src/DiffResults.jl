@@ -1,6 +1,6 @@
 module DiffResults
 
-using StaticArraysCore: StaticArray, similar_type, Size
+using StaticArraysCore: StaticArray, similar_type, Size, SArray
 
 #########
 # Types #
@@ -36,7 +36,7 @@ Return `r::DiffResult`, with output value storage provided by `value` and output
 storage provided by `derivs`.
 
 In reality, `DiffResult` is an abstract supertype of two concrete types, `MutableDiffResult`
-and `ImmutableDiffResult`. If all `value`/`derivs` are all `Number`s or `StaticArray`s,
+and `ImmutableDiffResult`. If all `value`/`derivs` are all `Number`s or `StaticArrays.SArray`s,
 then `r` will be immutable (i.e. `r::ImmutableDiffResult`). Otherwise, `r` will be mutable
 (i.e. `r::MutableDiffResult`).
 
@@ -45,8 +45,8 @@ Note that `derivs` can be provide in splatted form, i.e. `DiffResult(value, deri
 DiffResult
 
 DiffResult(value::Number, derivs::Tuple{Vararg{Number}}) = ImmutableDiffResult(value, derivs)
-DiffResult(value::Number, derivs::Tuple{Vararg{StaticArray}}) = ImmutableDiffResult(value, derivs)
-DiffResult(value::StaticArray, derivs::Tuple{Vararg{StaticArray}}) = ImmutableDiffResult(value, derivs)
+DiffResult(value::Number, derivs::Tuple{Vararg{SArray}}) = ImmutableDiffResult(value, derivs)
+DiffResult(value::SArray, derivs::Tuple{Vararg{SArray}}) = ImmutableDiffResult(value, derivs)
 DiffResult(value::Number, derivs::Tuple{Vararg{AbstractArray}}) = MutableDiffResult(value, derivs)
 DiffResult(value::AbstractArray, derivs::Tuple{Vararg{AbstractArray}}) = MutableDiffResult(value, derivs)
 DiffResult(value::Union{Number,AbstractArray}, derivs::Union{Number,AbstractArray}...) = DiffResult(value, derivs)

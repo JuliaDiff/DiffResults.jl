@@ -35,7 +35,7 @@ using DiffResults: DiffResult, GradientResult, JacobianResult, HessianResult,
 
     @test GradientResult(s0) === DiffResult(first(s0), s0)
     @test JacobianResult(s0) === DiffResult(s0, zeros(SMatrix{k,k,Float64}))
-    @test JacobianResult(SVector{k + 1}(vcat(s0, 0.0)), s0) === DiffResult(SVector{k + 1}(vcat(s0, 0.0)), zeros(SMatrix{k + 1,k,Float64}))
+    @test JacobianResult(SVector{k+1}(vcat(s0, 0.0)), s0) === DiffResult(SVector{k+1}(vcat(s0, 0.0)), zeros(SMatrix{k+1,k,Float64}))
     @test HessianResult(s0) === DiffResult(first(s0), s0, zeros(SMatrix{k,k,Float64}))
 
     @test issimilar(GradientResult(m0), DiffResult(first(m0), m0))
@@ -125,7 +125,7 @@ using DiffResults: DiffResult, GradientResult, JacobianResult, HessianResult,
         rsmix = value!(rsmix, n0)
 
         ksqrt = Int(sqrt(k))
-        T = typeof(SMatrix{ksqrt,ksqrt}(rand(ksqrt, ksqrt)))
+        T = typeof(SMatrix{ksqrt,ksqrt}(rand(ksqrt,ksqrt)))
         rs_new = value!(rs, convert(T, value(rs)))
         @test rs_new === rs
     end
@@ -270,18 +270,28 @@ using DiffResults: DiffResult, GradientResult, JacobianResult, HessianResult,
         @test gradient(rm) === m1 == m1_new
         rm = gradient!(rm, m1_copy)
 
+        x1_new, x1_copy = rand(k, k), copy(x1)
+        rx = gradient!(exp, rx, x1_new)
+        @test gradient(rx) === x1 == exp.(x1_new)
+        rx = gradient!(exp, rx, x1_copy)
+
         s0_new = rand(k)
         rsmix = gradient!(exp, rsmix, s0_new)
         @test gradient(rsmix) == exp.(s0_new)
         @test typeof(gradient(rsmix)) === typeof(s0)
         rsmix = gradient!(exp, rsmix, s0)
 
-        T = typeof(SVector{k * k}(rand(k * k)))
+        m1_new, m1_copy = rand(k, k), copy(m1)
+        rm = gradient!(exp, rm, m1_new)
+        @test gradient(rm) === m1 == exp.(m1_new)
+        rm = gradient!(exp, rm, m1_copy)
+
+        T = typeof(SVector{k*k}(rand(k*k)))
         rs_new = gradient!(rs, convert(T, gradient(rs)))
         @test rs_new === rs
     end
 
-    @testset "jacobian/jacobian!" begin
+    @testset "jacobian/jacobian!"  begin
 
         x1_new, x1_copy = rand(k, k), copy(x1)
         rx = jacobian!(rx, x1_new)
@@ -315,7 +325,7 @@ using DiffResults: DiffResult, GradientResult, JacobianResult, HessianResult,
         @test jacobian(rm) === m1 == exp.(m1_new)
         rm = jacobian!(exp, rm, m1_copy)
 
-        T = typeof(SVector{k * k}(rand(k * k)))
+        T = typeof(SVector{k*k}(rand(k*k)))
         rs_new = jacobian!(rs, convert(T, jacobian(rs)))
         @test rs_new === rs
     end
@@ -354,7 +364,7 @@ using DiffResults: DiffResult, GradientResult, JacobianResult, HessianResult,
         @test hessian(rm) === m2 == exp.(m2_new)
         rm = hessian!(exp, rm, m2_copy)
 
-        T = typeof(SVector{k * k * k}(rand(k * k * k)))
+        T = typeof(SVector{k*k*k}(rand(k*k*k)))
         rs_new = hessian!(rs, convert(T, hessian(rs)))
         @test rs_new === rs
 

@@ -36,7 +36,7 @@ Return `r::DiffResult`, with output value storage provided by `value` and output
 storage provided by `derivs`.
 
 In reality, `DiffResult` is an abstract supertype of two concrete types, `MutableDiffResult`
-and `ImmutableDiffResult`. If all `value`/`derivs` are all `Number`s or `StaticArrays.SArray`s,
+and `ImmutableDiffResult`. If `value` or any element of `derivs` is a `Number` or `StaticArrays.SArray`,
 then `r` will be immutable (i.e. `r::ImmutableDiffResult`). Otherwise, `r` will be mutable
 (i.e. `r::MutableDiffResult`).
 

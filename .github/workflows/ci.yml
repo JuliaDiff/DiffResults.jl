@@ -16,7 +16,8 @@ jobs:
       fail-fast: false
       matrix:
         version:
-          - '1.6'
+          - 'min'
+          - 'lts'
           - '1'
           - 'pre'
         os:

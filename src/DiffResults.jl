@@ -329,8 +329,7 @@ hessian!(f, r::DiffResult, x) = derivative!(f, r, x, Val{2})
 # Pretty Printing #
 ###################
 
-Base.show(io::IO, r::ImmutableDiffResult) = print(io, "ImmutableDiffResult($(r.value), $(r.derivs))")
-
-Base.show(io::IO, r::MutableDiffResult) = print(io, "MutableDiffResult($(r.value), $(r.derivs))")
+Base.show(io::IO, r::ImmutableDiffResult) = print(io, "ImmutableDiffResult(", r.value, ", ", r.derivs, ")")
+Base.show(io::IO, r::MutableDiffResult) = print(io, "MutableDiffResult(", r.value, ", ", r.derivs, ")")
 
 end # module

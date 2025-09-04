@@ -24,6 +24,11 @@ using DiffResults: DiffResult, GradientResult, JacobianResult, HessianResult,
     @test rs === DiffResult(s0, s1, s2)
     @test rsmix === DiffResult(n0, s0, s1)
 
+    @test repr(rn) == "ImmutableDiffResult($n0, ($n1, $n2))"
+    @test repr(rx) == "MutableDiffResult($x0, ($x1, $x2))"
+    @test repr(rs) == "ImmutableDiffResult($s0, ($s1, $s2))"
+    @test repr(rsmix) == "ImmutableDiffResult($n0, ($s0, $s1))"
+
     @test issimilar(GradientResult(x0), DiffResult(first(x0), x0))
     @test issimilar(JacobianResult(x0), DiffResult(x0, similar(x0, k, k)))
     @test issimilar(JacobianResult(similar(x0, k + 1), x0), DiffResult(similar(x0, k + 1), similar(x0, k + 1, k)))

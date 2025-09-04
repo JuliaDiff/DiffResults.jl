@@ -124,8 +124,6 @@ end
     end
 end
 
-Base.eltype(r::DiffResult) = eltype(typeof(r))
-
 Base.eltype(::Type{D}) where {O,V,D<:DiffResult{O,V}} = eltype(V)
 
 Base.:(==)(a::DiffResult, b::DiffResult) = a.value == b.value && a.derivs == b.derivs

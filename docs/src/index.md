@@ -26,9 +26,11 @@ julia> x = rand(4);
 # and primal value based on the type and shape of `x`.
 julia> result = DiffResults.HessianResult(x)
 
-# Instead of passing an output buffer to `hessian!`, we pass `result`.
-# Note that we re-alias to `result` - this is important! See `hessian!`
-# docs for why we do this.
+# Instead of passing an output buffer to `ForwardDiff.hessian!`, we pass `result`.
+# Note that we re-alias to `result`:
+# This is not required in this example since `ForwardDiff.hessian!` mutates `result`;
+# however, in general it is important since immutable `DiffResult` instances
+# (e.g. `DiffResult` objects with static arrays) cannot be updated in-place.
 julia> result = ForwardDiff.hessian!(result, f, x);
 
 # ...and now we can get all the computed data from `result`
@@ -65,12 +67,12 @@ DiffResults.jacobian
 DiffResults.hessian
 ```
 
-## Mutating a `DiffResult`
+## Modifying a `DiffResult`
 
 ```@docs
-DiffResults.value!
-DiffResults.derivative!
-DiffResults.gradient!
-DiffResults.jacobian!
-DiffResults.hessian!
+DiffResults.value!!
+DiffResults.derivative!!
+DiffResults.gradient!!
+DiffResults.jacobian!!
+DiffResults.hessian!!
 ```
